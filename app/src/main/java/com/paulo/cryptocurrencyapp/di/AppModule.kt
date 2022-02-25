@@ -1,15 +1,17 @@
 package com.paulo.cryptocurrencyapp.di
 
-import com.paulo.cryptocurrencyapp.common.Constants
-import com.paulo.cryptocurrencyapp.data.remote.CoinPaprikaApi
-import com.paulo.cryptocurrencyapp.data.repository.CoinRepositoryImpl
-import com.paulo.cryptocurrencyapp.domain.repository.CoinRepository
+
+import android.app.Application
+import androidx.room.Room
+import com.paulo.cryptocurrencyapp.feature_note.data.data_source.NoteDatabase
+import com.paulo.cryptocurrencyapp.feature_note.data.repository.NoteRepositoryImpl
+import com.paulo.cryptocurrencyapp.feature_note.domain.repository.NoteRepository
+import com.paulo.cryptocurrencyapp.feature_note.domain.use_case.*
 import dagger.Module
 import dagger.Provides
+
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -18,18 +20,28 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePaprikaApi(): CoinPaprikaApi{
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(CoinPaprikaApi::class.java)
+    fun provideNoteDatabase(app: Application): NoteDatabase {
+        return Room.databaseBuilder(
+            app,
+            NoteDatabase::class.java,
+            NoteDatabase.DATABASE_NAME
+        ).build()
     }
 
     @Provides
     @Singleton
-    fun provideCoinRepository(api: CoinPaprikaApi): CoinRepository {
-        return CoinRepositoryImpl(api)
+    fun provideNoteRepository(db: NoteDatabase): NoteRepository {
+        return NoteRepositoryImpl(db.noteDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideNoteUseCases(repository: NoteRepository): NoteUseCases {
+        return NoteUseCases(
+            getNotes = GetNotes(repository),
+            deleteNote = DeleteNote(repository),
+            addNote = AddNote(repository),
+            getNote = GetNote(repository)
+        )
+    }
 }

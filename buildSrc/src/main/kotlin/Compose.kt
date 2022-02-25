@@ -23,4 +23,8 @@ object Compose {
     const val flowlayout = "com.google.accompanist:accompanist-flowlayout:$flowlayoutVersion"
 
 
+    const val icons = "androidx.compose.material:material-icons-extended:$composeVersion"
+
+
+
 }
