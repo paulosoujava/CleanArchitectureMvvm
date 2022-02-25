@@ -59,6 +59,7 @@ dependencies {
     implementation(Compose.viewModelCompose)
     implementation(Compose.activityCompose)
     implementation(Compose.flowlayout)
+    implementation(Compose.icons)
 
     implementation(DaggerHilt.hiltAndroid)
     kapt(DaggerHilt.hiltCompiler)
